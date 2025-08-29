@@ -15,41 +15,56 @@ Arduino Uno is a popular microcontroller development board based on ATMega328P. 
 ## Seven Segment Display
 A seven segment display consists of seven LEDs arranged in a figure of eight pattern. Each segment is labeled a-g and can be individually controlled to display digits 0-9 (and sometimes A-F). Common Anode or Common Cathode type determines wiring, with common anode connected to 5V (segments turned on by grounding corresponding pins), or common cathode connected to GND (segments turned on by supplying HIGH voltage).
 # Diagram 
-<img width="811" height="610" alt="Screenshot 2025-08-29 103357" src="https://github.com/user-attachments/assets/a72ff87f-5896-4250-aab2-24687cab4db9" />
+<img width="1191" height="821" alt="Screenshot 2025-08-29 105655" src="https://github.com/user-attachments/assets/31192933-9777-4fee-b503-855437e44f10" />
 
 # Program
 ```
-int a = 2;
-int b = 3;
-int c = 4;
-int d = 5;
-int e = 6;
-int f = 7;
-int g = 8;
+int segPins[] = {13,12,11,10,9,8,7}; 
+int buttonPin = 2;
+int count = 0;
+bool lastButtonState = HIGH;
+byte digits[10][7] = {
+  {1,1,1,1,1,1,0}, 
+  {0,1,1,0,0,0,0}, 
+  {1,1,0,1,1,0,1}, 
+  {1,1,1,1,0,0,1}, 
+  {0,1,1,0,0,1,1}, 
+  {1,0,1,1,0,1,1}, 
+  {1,0,1,1,1,1,1}, 
+  {1,1,1,0,0,0,0}, 
+  {1,1,1,1,1,1,1}, 
+  {1,1,1,1,0,1,1}  
+};
 
 void setup() {
-  pinMode(a, OUTPUT);
-  pinMode(b, OUTPUT);
-  pinMode(c, OUTPUT);
-  pinMode(d, OUTPUT);
-  pinMode(e, OUTPUT);
-  pinMode(f, OUTPUT);
-  pinMode(g, OUTPUT);
+  for(int i=0; i<7; i++) {
+    pinMode(segPins[i], OUTPUT);
+  }
+  pinMode(buttonPin, INPUT_PULLUP); 
+  displayDigit(count);
 }
 
 void loop() {
-  // Display "6" → Segments ON = a, f, e, d, c, g
-  digitalWrite(a, HIGH);
-  digitalWrite(b, LOW);
-  digitalWrite(c, HIGH);
-  digitalWrite(d, HIGH);
-  digitalWrite(e, HIGH);
-  digitalWrite(f, HIGH);
-  digitalWrite(g, HIGH);
+  bool buttonState = digitalRead(buttonPin);
+
+  if (lastButtonState == HIGH && buttonState == LOW) {
+    count++;
+    if (count > 9) count = 0;
+    displayDigit(count);
+    delay(200); // debounce
+  }
+  lastButtonState = buttonState;
+}
+
+void displayDigit(int num) {
+  for (int i=0; i<7; i++) {
+    digitalWrite(segPins[i], digits[num][i]);
+    }
 }
 ```
-<img width="1919" height="1079" alt="Screenshot 2025-08-29 102015" src="https://github.com/user-attachments/assets/af80221c-6637-41a4-8fa2-802d726709ad" />
+<img width="1919" height="1078" alt="Screenshot 2025-08-29 105425" src="https://github.com/user-attachments/assets/96177f76-9dcb-42db-8934-42ead0be4f75" />
 
 # Output
-<img width="1919" height="1079" alt="Screenshot 2025-08-29 102029" src="https://github.com/user-attachments/assets/53b11d25-01d1-4431-b94e-d61fd70b0900" />
+<img width="1919" height="1079" alt="Screenshot 2025-08-29 105414" src="https://github.com/user-attachments/assets/09610f8d-44fb-44b5-aac8-20764fa19163" />
+<img width="1919" height="1078" alt="Screenshot 2025-08-29 105401" src="https://github.com/user-attachments/assets/783daade-1e42-4839-a0f7-ffda360a797b" />
 
